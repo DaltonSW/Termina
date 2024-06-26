@@ -29,6 +29,7 @@ I'm also just writing stuff out as I think of it, without any regard for difficu
 - Implicitly infer function scope based on function naming scheme. It's both a keyword saver and a formatting enforcer
   - `func PublicMethod()`
   - `func privateMethod()` (maybe prefix with underscore, but I like uppercase vs lowercase)
+- File I/O of any sort
 - Some concept of an auto-deferable function, which essentially acts like an "end of current function" callback
   ```
     func OpenFile(str filename) io.File {
@@ -41,6 +42,8 @@ I'm also just writing stuff out as I think of it, without any regard for difficu
     ```
   - And then you could call `var file = defer OpenFile("filename.txt")`, which would automatically call `CloseFile(file)` before the function returns execution to its caller
     - It's like Go's system, but... nicer
+  - Doesn't need to be I/O, could be used for anything
+  - Also would have the option to defer a call normall just by doing `defer thing.Func()` or `defer DoFunc(thing)`
 - Modules / packages / dependencies / refer to other file's functions somehow
 
 ### Things I'm Iffy On
@@ -61,6 +64,105 @@ I'm also just writing stuff out as I think of it, without any regard for difficu
 
 ### Examples
 
+`main.trm`
+```
+# Comments start with an octothorpe
+
+# Main entry point of the program. If you call `term run <file>`, it will run that file's main()
+# Needs to return an exit code. 0 is a success, anything greater than that is an error
+func main() int {
+  print("Hello, mom!");
+  defer print("Goodbye, mom!"); # Will run after everything in the function, but before function returns control to caller
+  var name = "Dalton"; # String literal
+  var month = 12; Number literal
+  var day = 25;
+  var tempOutside = 79.4; # Float literal
+  var tempInside = 69.0; # Local variable naming convention is snakeCase, like with privateFunctions
+  printf("Hello {name}, how are you doing on today, {month}/{day}? ", newline=false);
+  printf("Did you know that it is {tempOutside} degrees outside?")
+  printf("Thankfully it's a nice {tempInside} in here!")
+}
+```
+
+`shapes.trm`
+```
+import {
+  "math",
+  "os"
+}
+
+const PI = 3.1415926
+
+abstract class Shape {
+  float area; # If you don't specify a starting value, it'll default to its zero value
+  func calcArea() float;
+}
+
+class Rectangle : Shape {
+  float length;
+  float height;
+
+  # Constructors do not have a `func` nor a return type
+  Rectangle(float l, float h) {
+    this.length = l;
+    this.height = h;
+    this.area = this.CalcArea();
+  }
+
+  func CalcArea() float {
+    return this.length * this.height;
+  }
+}
+
+class Square : Rectangle {
+  Square(float side) {
+    this.length = side;
+    this.height = side;
+    this.area = this.CalcArea();
+  }
+
+  # You can have multiple constructors with different structures
+  Square(float l, float h) {
+    parent(l, h); # Reference parent class using the `parent` keyword. To call its constructor, call it like a function
+  }
+}
+
+class Circle : Shape {
+  float radius;
+
+  Circle(float r) {
+    this.radius = r;
+    this.area = this.CalcArea();
+  }
+
+  func CalcArea() float {
+    return PI * this.radius^2;
+  }
+}
+
+func main() int {
+  var choice = math.random(0:2); # <int>:<int>[:<int>] indicates a range, output as a list. 
+  # Range format is <start>:<stop>[:<step>]. Ranges are INCLUSIVE
+
+  # Declare something as a base time, and reassign it to a child type later on
+  Shape shape;
+  if choice == 0 {
+    shape = Rectangle(1, 1);
+  } elif choice == 1 {
+    shape = Square(2);
+  } elif (choice == 2) { # Optional parentheses in boolean expressions
+    shape = Circle(2.5);
+  } else {
+    shape = null; # All types can optionally be null
+  }
+
+  if !shape {
+    os.exit(1);
+  }
+
+  print("Shape: {type(shape)} -- Area: {shape.area}")
+}
+```
 ### Classes
 
 ### Functions
@@ -98,14 +200,20 @@ I'm also just writing stuff out as I think of it, without any regard for difficu
 - PIPE
 - AMPER
 
-(Do we need to 'reserve' a hashtag, or do we just entirely yeet the comments during Step 1/lexing?)
+(Do we need to 'reserve' an octothorpe, or do we just entirely yeet the comments during Step 1/lexing and then not have to worry?)
 
 ### Keywords
 
+- `if`
+- `else`
+- `elif` (?)
 - `class`
 - `return`
 - `func`
 - `defer`
+- `const`
+- `static`
+- `private` (?)
 - `interface` (?)
 - `abstract` (?)
 - `import` (?)
@@ -118,6 +226,9 @@ I'm also just writing stuff out as I think of it, without any regard for difficu
 - `float`
 - `bool`
 - `null`
+
+- `list`
+- `dict`
 
 (if differentiating between `int`/`float` and `str`/`char` becomes too difficult, I'll collapse them into `num` and `str`, where a `char` is just a `str` with length 1)
 
