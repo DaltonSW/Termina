@@ -1,10 +1,19 @@
-# Termina (pending)
+# Termina (name pending)
 
-Termina (pending) is a programming language, but it was made by me instead of someone else. It is, first and foremost, a learning opportunity, and something that I would love to be able to say that I accomplished (whatever I define that to mean).
+Termina (pending) is a programming language, but it was designed and made by me, instead of someone else.
+
+## Disclaimer
+
+- This doesn't exist in any implementation presently. I plan to start working on a compiler Soon:tm:
+- I have no idea how feasible implementing any of these things are going to be for me. The end result could be drastically different, but this is what I kinda think I'd like a language to look like
+- Everything here is subject to change any amount at any time right now
+- No assurance that ideas are consistently expressed throughout this doc. It's very free form thought. I might miss something in an example, or contradict a previous statement in a later block. I might say the same thing in 4 different places. 
 
 ## Why?
 
-Cuz I wanna. It sounds neat and fun.
+Cuz it sounds really fun! I like learning things, and this seems like a really fun thing to learn. I've been using coding languages regularly for almost 10 years at this point, and I would like to have a better grasp on what is actually happening. I know the buzzwords like "garbage collector" and "bytecode" and "segmentation fault", but... what's actually happening? I dunno, but I sure would like to!
+
+Also, I really like making cool shit, and being able to say "I made a programming language" sounds like some really cool shit.
 
 ## Design Goals
 
@@ -21,7 +30,7 @@ I'm also just writing stuff out as I think of it, without any regard for difficu
 - Comments start with `#`
 - Multiple returns from a function
 - Allow both single and double quotes
-- Ternaries/simple conditional assignment
+- Easy "this or that" conditional assignment (ternary)
 - Try to limit colons outside of actual `this: that` usage. Stuff like `std::fmt::doThing` looks SO ugly
 
 ### Things That Sound Neat But Don't Need If Hard
@@ -49,13 +58,13 @@ I'm also just writing stuff out as I think of it, without any regard for difficu
 ### Things I'm Iffy On
 
 - Semicolons as line endings
-- Interfaces (don't hate me, I just don't understand them)
+- Interfaces (don't hate me, I just don't understand them well enough)
 - Anonymous functions / lambdas (see above line)
 
 ### Things I Actively Don't Want
 
 - Using two symbols to assign a variable, I hate typing `someVar := 5` (he says, while likely writing this compiler in Go)
-- Fat arrow syntax. Really just two operators next to each other for anything that aren't combining the two operators
+- Really just two operators next to each other for anything that aren't combining the two operators
   - `<=` is totally fine, cuz it's the combo of `<` and `=`
   - `->` and `:=` are stupid and I feel like there are almost always better options available
   - `==` kinda breaks this rule, but it's too pervasive at this point, and the thought of single equals doing both assignment and comparison just feels wrong to me, so I'm gonna let it slide.... But it better stay on its best behavior
@@ -65,9 +74,7 @@ I'm also just writing stuff out as I think of it, without any regard for difficu
 ### Examples
 
 Disclaimer:
-- I wrote this out just kinda freeform to see what the syntax would end up like if I just wrote some code snippets how I wanted
-- Everything here is subject to change at literally any whim
-- Definitely no assurance that some things in these examples don't contradict other parts
+- I wrote this out just kinda freeform to see what the syntax would end up like if I just wrote some code snippets how I wanted. Some of the ideas exhibited here might be stupid, or might be setting me up for a really hard time in the future
 
 `main.trm`
 ```
