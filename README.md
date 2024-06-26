@@ -64,6 +64,11 @@ I'm also just writing stuff out as I think of it, without any regard for difficu
 
 ### Examples
 
+Disclaimer:
+- I wrote this out just kinda freeform to see what the syntax would end up like if I just wrote some code snippets how I wanted
+- Everything here is subject to change at literally any whim
+- Definitely no assurance that some things in these examples don't contradict other parts
+
 `main.trm`
 ```
 # Comments start with an octothorpe
@@ -79,8 +84,10 @@ func main() int {
   var tempOutside = 79.4; # Float literal
   var tempInside = 69.0; # Local variable naming convention is snakeCase, like with privateFunctions
   printf("Hello {name}, how are you doing on today, {month}/{day}? ", newline=false);
-  printf("Did you know that it is {tempOutside} degrees outside?")
-  printf("Thankfully it's a nice {tempInside} in here!")
+  printf("Did you know that it is {tempOutside} degrees outside?");
+  printf("Thankfully it's a nice {tempInside} in here!");
+
+  return 0;
 }
 ```
 
@@ -141,7 +148,7 @@ class Circle : Shape {
 }
 
 func main() int {
-  var choice = math.random(0:2); # <int>:<int>[:<int>] indicates a range, output as a list. 
+  var choice = math.Random(0:2); # <int>:<int>[:<int>] indicates a range, output as a list. 
   # Range format is <start>:<stop>[:<step>]. Ranges are INCLUSIVE
 
   # Declare something as a base time, and reassign it to a child type later on
@@ -157,10 +164,13 @@ func main() int {
   }
 
   if !shape {
-    os.exit(1);
+    os.PrintErr("No shape defined!");
+    return 1;
   }
 
-  print("Shape: {type(shape)} -- Area: {shape.area}")
+  print("Shape: {type(shape)} -- Area: {shape.area}");
+
+  return 0;
 }
 ```
 ### Classes
