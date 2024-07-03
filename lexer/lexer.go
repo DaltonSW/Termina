@@ -1,7 +1,11 @@
 package lexer
 
-import "github.com/charmbracelet/log"
-import "dalton.dog/termina/token"
+import (
+	//	"strings"
+
+	"dalton.dog/termina/token"
+	"github.com/charmbracelet/log"
+)
 
 type Lexer struct {
 	tokens     []token.TokenType
@@ -17,7 +21,7 @@ func MakeNewLexer(textIn string) *Lexer {
 	lexer.input = textIn
 
 	log.Info("Making new lexer", "input", textIn)
-	lexer.readNextByte()
+	//lexer.readNextByte()
 
 	return lexer
 }
@@ -26,6 +30,11 @@ func (lexer *Lexer) GetNextToken() token.Token {
 	var newToken token.Token
 	var newTokenType token.TokenType
 	var newTokenLiteral string
+
+	lexer.readNextByte()
+	lexer.skipWhitespace()
+
+	log.Info("cur char", "Char", lexer.curChar)
 
 	lexer.curLineNum = 1
 
@@ -87,27 +96,28 @@ func (lexer *Lexer) GetNextToken() token.Token {
 		newTokenType = token.ILLEGAL
 	}
 
-	if newTokenType == token.ILLEGAL {
-		if isCharacter(lexer.curChar) {
-			newToken = lexer.tryReadWord()
-		} else if isDigit(lexer.curChar) {
-			newToken = lexer.tryReadLiteral()
-		} else {
-			newToken = *token.MakeNewToken(token.ILLEGAL, "Illegal", lexer.curLineNum)
-
-		}
-
-	} else {
+	// Was able to match a single char. Build new token and return
+	if newTokenType != token.ILLEGAL {
 		newTokenLiteral = string(lexer.curChar)
 		newToken = *token.MakeNewToken(newTokenType, newTokenLiteral, lexer.curLineNum)
+		return newToken
 	}
 
-	lexer.readNextByte()
+	log.Info("Couldn't match on single char.")
+	if isCharacter(lexer.curChar) {
+		newToken = lexer.tryReadWord()
+	} else if isDigit(lexer.curChar) {
+		newToken = lexer.tryReadNumber()
+	} else {
+		newToken = *token.MakeNewToken(token.ILLEGAL, string(lexer.curChar), lexer.curLineNum)
+
+	}
 
 	return newToken
 }
 
 func (lexer *Lexer) tryReadWord() token.Token {
+	//log.Info("Trying to read word")
 	var newTokenType token.TokenType
 	startPos := lexer.curPos
 
@@ -129,19 +139,32 @@ func (lexer *Lexer) tryReadWord() token.Token {
 	return newToken
 }
 
-func (lexer *Lexer) tryReadLiteral() token.Token {
+func (lexer *Lexer) tryReadNumber() token.Token {
+	// var newTokenType token.TokenType
+
+	//log.Info("Trying to read number")
 	startPos := lexer.curPos
 
-	for isCharacter(lexer.curChar) {
+	for isDigit(lexer.curChar) || lexer.curChar == '.' {
 		lexer.readNextByte()
 	}
 
 	identString := lexer.input[startPos:lexer.curPos]
 
-	newToken := *token.MakeNewToken(token.IDENT, identString, lexer.curLineNum)
+	// if strings.Contains(identString, ".") {
+	// 	newTokenType = token.FLOAT
+	// } else {
+	// 	newTokenType = token.INTEGER
+	// }
+
+	newToken := *token.MakeNewToken(token.LITERAL, identString, lexer.curLineNum)
 
 	return newToken
 }
+
+// func (lexer *Lexer) tryReadString() token.Token {
+// 	return nil
+// }
 
 func isCharacter(ch byte) bool {
 	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
