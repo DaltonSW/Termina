@@ -3,8 +3,10 @@ package token
 type TokenType int
 
 const (
+	EOF TokenType = iota
+
 	// Operators
-	PLUS TokenType = iota
+	PLUS
 	MINUS
 	SLASH
 	STAR
@@ -31,6 +33,8 @@ const (
 	COLON
 	UNDRSCOR
 	NEWLINE
+	PERIOD
+	COMMA
 
 	// Keywords
 	VAR
@@ -39,6 +43,7 @@ const (
 
 	// Identifers & Types
 	IDENT
+	LITERAL
 	INTEGER
 	FLOAT
 	STRING
@@ -48,19 +53,26 @@ const (
 	// Misc
 	EQUALS
 	ILLEGAL
-	EOF
 	BSLASH
 )
+
+var Keywords = map[string]TokenType{
+	"func":   FUNC,
+	"return": RETURN,
+	"var":    VAR,
+}
 
 type Token struct {
 	Type    TokenType
 	Literal string
+	LineNum int
 }
 
-func MakeNewToken(tokenType TokenType, tokenLiteral byte) *Token {
+func MakeNewToken(tokenType TokenType, tokenLiteral string, lineNum int) *Token {
 	newToken := &Token{
 		Type:    tokenType,
 		Literal: string(tokenLiteral),
+		LineNum: lineNum,
 	}
 
 	return newToken
