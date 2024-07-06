@@ -1,7 +1,8 @@
 package lexer
 
 import (
-	//	"strings"
+	"slices"
+	"strings"
 
 	"dalton.dog/termina/token"
 	"github.com/charmbracelet/log"
@@ -19,9 +20,13 @@ type Lexer struct {
 func MakeNewLexer(textIn string) *Lexer {
 	lexer := &Lexer{}
 	lexer.input = textIn
+	lexer.tokens = make([]token.TokenType, 10)
+	lexer.curPos = 0
+	lexer.posToRead = 0
+	lexer.curLineNum = 1
 
-	log.Info("Making new lexer", "input", textIn)
-	//lexer.readNextByte()
+	// log.Info("Making new lexer", "input", textIn)
+	lexer.readNextByte()
 
 	return lexer
 }
@@ -31,12 +36,9 @@ func (lexer *Lexer) GetNextToken() token.Token {
 	var newTokenType token.TokenType
 	var newTokenLiteral string
 
-	lexer.readNextByte()
 	lexer.skipWhitespace()
 
-	log.Info("cur char", "Char", lexer.curChar)
-
-	lexer.curLineNum = 1
+	log.Info("cur char", "Char", string(lexer.curChar))
 
 	// Single Char Tokens
 	switch lexer.curChar {
@@ -79,6 +81,8 @@ func (lexer *Lexer) GetNextToken() token.Token {
 		newTokenType = token.COLON
 	case '_':
 		newTokenType = token.UNDRSCOR
+	case ',':
+		newTokenType = token.COMMA
 	case '\n':
 		newTokenType = token.NEWLINE
 		lexer.curLineNum += 1
@@ -93,26 +97,22 @@ func (lexer *Lexer) GetNextToken() token.Token {
 		newTokenType = token.EOF
 
 	default:
-		newTokenType = token.ILLEGAL
+		// Wasn't able to match on a single character
+		if isCharacter(lexer.curChar) {
+			return lexer.tryReadWord()
+		} else if isDigit(lexer.curChar) {
+			return lexer.tryReadNumber()
+		} else {
+			log.Info("Wasn't able to find a match")
+			newTokenType = token.ILLEGAL
+
+		}
 	}
 
-	// Was able to match a single char. Build new token and return
-	if newTokenType != token.ILLEGAL {
-		newTokenLiteral = string(lexer.curChar)
-		newToken = *token.MakeNewToken(newTokenType, newTokenLiteral, lexer.curLineNum)
-		return newToken
-	}
+	newTokenLiteral = string(lexer.curChar)
+	newToken = *token.MakeNewToken(newTokenType, newTokenLiteral, lexer.curLineNum)
 
-	log.Info("Couldn't match on single char.")
-	if isCharacter(lexer.curChar) {
-		newToken = lexer.tryReadWord()
-	} else if isDigit(lexer.curChar) {
-		newToken = lexer.tryReadNumber()
-	} else {
-		newToken = *token.MakeNewToken(token.ILLEGAL, string(lexer.curChar), lexer.curLineNum)
-
-	}
-
+	lexer.readNextByte()
 	return newToken
 }
 
@@ -130,6 +130,8 @@ func (lexer *Lexer) tryReadWord() token.Token {
 	newType, ok := token.Keywords[identString]
 	if ok {
 		newTokenType = newType
+	} else if slices.Contains(token.Types, identString) {
+		newTokenType = token.TYPEDECL
 	} else {
 		newTokenType = token.IDENT
 	}
@@ -140,7 +142,7 @@ func (lexer *Lexer) tryReadWord() token.Token {
 }
 
 func (lexer *Lexer) tryReadNumber() token.Token {
-	// var newTokenType token.TokenType
+	var newTokenType token.TokenType
 
 	//log.Info("Trying to read number")
 	startPos := lexer.curPos
@@ -151,13 +153,13 @@ func (lexer *Lexer) tryReadNumber() token.Token {
 
 	identString := lexer.input[startPos:lexer.curPos]
 
-	// if strings.Contains(identString, ".") {
-	// 	newTokenType = token.FLOAT
-	// } else {
-	// 	newTokenType = token.INTEGER
-	// }
+	if strings.Contains(identString, ".") {
+		newTokenType = token.FLOAT
+	} else {
+		newTokenType = token.INTEGER
+	}
 
-	newToken := *token.MakeNewToken(token.LITERAL, identString, lexer.curLineNum)
+	newToken := *token.MakeNewToken(newTokenType, identString, lexer.curLineNum)
 
 	return newToken
 }
@@ -176,6 +178,7 @@ func isDigit(ch byte) bool {
 
 func (lexer *Lexer) skipWhitespace() {
 	for lexer.curChar == ' ' || lexer.curChar == '\t' || lexer.curChar == '\r' {
+		log.Info("Skipping char", "char", string(lexer.curChar))
 		lexer.readNextByte()
 	}
 }
@@ -188,5 +191,5 @@ func (lexer *Lexer) readNextByte() {
 	}
 
 	lexer.curPos = lexer.posToRead
-	lexer.posToRead += 1
+	lexer.posToRead++
 }

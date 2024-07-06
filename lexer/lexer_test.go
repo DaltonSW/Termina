@@ -109,12 +109,12 @@ func TestTokenParsingNumberLiteral(t *testing.T) {
 		expectedType    token.TokenType
 		expectedLiteral string
 	}{
-		{token.LITERAL, "5"},
-		{token.LITERAL, "10"},
-		{token.LITERAL, "15"},
-		{token.LITERAL, "20"},
-		{token.LITERAL, "100"},
-		{token.LITERAL, "3.14"},
+		{token.INTEGER, "5"},
+		{token.INTEGER, "10"},
+		{token.INTEGER, "15"},
+		{token.INTEGER, "20"},
+		{token.INTEGER, "100"},
+		{token.FLOAT, "3.14"},
 	}
 
 	for i, expected := range tests {
@@ -150,36 +150,36 @@ func TestTokenParsingSimpleProgram(t *testing.T) {
 		{token.VAR, "var"},
 		{token.IDENT, "x"},
 		{token.EQUALS, "="},
-		{token.LITERAL, "5"},
+		{token.INTEGER, "5"},
 		{token.NEWLINE, "\n"},
 
 		{token.VAR, "var"},
 		{token.IDENT, "y"},
 		{token.EQUALS, "="},
-		{token.LITERAL, "10"},
+		{token.INTEGER, "10"},
 		{token.NEWLINE, "\n"},
 		{token.NEWLINE, "\n"},
 
 		{token.FUNC, "func"},
 		{token.IDENT, "add"},
 		{token.LPAREN, "("},
-		{token.INTEGER, "int"},
+		{token.TYPEDECL, "int"},
 		{token.IDENT, "x"},
 		{token.COMMA, ","},
-		{token.INTEGER, "int"},
+		{token.TYPEDECL, "int"},
 		{token.IDENT, "y"},
 		{token.RPAREN, ")"},
 		{token.LBRACE, "{"},
-		//		{token.NEWLINE, "nl"},
+		{token.NEWLINE, "\n"},
 
 		{token.RETURN, "return"},
 		{token.IDENT, "x"},
 		{token.PLUS, "+"},
 		{token.IDENT, "y"},
-		//		{token.NEWLINE, "nl"},
+		{token.NEWLINE, "\n"},
 		{token.RBRACE, "}"},
-		//		{token.NEWLINE, "nl"},
-		//		{token.NEWLINE, "nl"},
+		{token.NEWLINE, "\n"},
+		{token.NEWLINE, "\n"},
 
 		{token.VAR, "var"},
 		{token.IDENT, "sum"},
@@ -190,12 +190,12 @@ func TestTokenParsingSimpleProgram(t *testing.T) {
 		{token.COMMA, ","},
 		{token.IDENT, "y"},
 		{token.RPAREN, ")"},
-		//		{token.NEWLINE, "nl"},
-		//		{token.NEWLINE, "nl"},
+		{token.NEWLINE, "\n"},
+		{token.NEWLINE, "\n"},
 
 		{token.IDENT, "exit"},
 		{token.LPAREN, "("},
-		{token.LITERAL, "0"},
+		{token.INTEGER, "0"},
 		{token.RPAREN, ")"},
 	}
 

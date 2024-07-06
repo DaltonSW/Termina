@@ -19,6 +19,8 @@ const (
 	LESSEQUAL
 	ISEQUAL
 	NOTEQUAL
+	IF
+	ELSE
 
 	// Grouping
 	LPAREN
@@ -43,7 +45,8 @@ const (
 
 	// Identifers & Types
 	IDENT
-	LITERAL
+	TYPEDECL
+
 	INTEGER
 	FLOAT
 	STRING
@@ -60,6 +63,12 @@ var Keywords = map[string]TokenType{
 	"func":   FUNC,
 	"return": RETURN,
 	"var":    VAR,
+	"if":     IF,
+	"else":   ELSE,
+}
+
+var Types = []string{
+	"int", "float", "char", "str", "bool",
 }
 
 type Token struct {
