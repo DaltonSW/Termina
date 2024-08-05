@@ -25,7 +25,7 @@ func MakeNewLexer(textIn string) *Lexer {
 	lexer.posToRead = 0
 	lexer.curLineNum = 1
 
-	// log.Info("Making new lexer", "input", textIn)
+	log.Info("Making new lexer", "input", textIn)
 	lexer.readNextByte()
 
 	return lexer
@@ -38,11 +38,12 @@ func (lexer *Lexer) GetNextToken() token.Token {
 
 	lexer.skipWhitespace()
 
-	log.Info("cur char", "Char", string(lexer.curChar))
+	// log.Info("cur char", "Char", string(lexer.curChar))
 
 	// Single Char Tokens
 	switch lexer.curChar {
 	// Operators
+	// NOTE: Consider if I want the various +=, -=, etc.
 	case '+':
 		newTokenType = token.PLUS
 	case '-':
@@ -52,14 +53,34 @@ func (lexer *Lexer) GetNextToken() token.Token {
 	case '/':
 		newTokenType = token.SLASH
 	case '!':
-		newTokenType = token.EXCLAM
+		nextByte := lexer.peekNextByte()
+		if nextByte != '=' {
+			newTokenType = token.EXCLAM
+		} else {
+			newTokenType = token.NOTEQUAL
+			lexer.readNextByte()
+			newTokenLiteral = "!="
+		}
 
 	// Comparison
 	case '<':
-		newTokenType = token.LESSTHAN
+		nextByte := lexer.peekNextByte()
+		if nextByte != '=' {
+			newTokenType = token.LESSTHAN
+		} else {
+			newTokenType = token.LESSEQUAL
+			lexer.readNextByte()
+			newTokenLiteral = "<="
+		}
 	case '>':
-		newTokenType = token.GRTRTHAN
-
+		nextByte := lexer.peekNextByte()
+		if nextByte != '=' {
+			newTokenType = token.GRTRTHAN
+		} else {
+			newTokenType = token.GRTREQUAL
+			lexer.readNextByte()
+			newTokenLiteral = ">="
+		}
 	// Grouping
 	case '(':
 		newTokenType = token.LPAREN
@@ -89,7 +110,14 @@ func (lexer *Lexer) GetNextToken() token.Token {
 	// Misc
 
 	case '=':
-		newTokenType = token.EQUALS
+		nextByte := lexer.peekNextByte()
+		if nextByte != '=' {
+			newTokenType = token.EQUALS
+		} else {
+			newTokenType = token.ISEQUAL
+			lexer.readNextByte()
+			newTokenLiteral = "=="
+		}
 	case '\\':
 		newTokenType = token.BSLASH
 
@@ -109,7 +137,9 @@ func (lexer *Lexer) GetNextToken() token.Token {
 		}
 	}
 
-	newTokenLiteral = string(lexer.curChar)
+	if newTokenLiteral == "" {
+		newTokenLiteral = string(lexer.curChar)
+	}
 	newToken = *token.MakeNewToken(newTokenType, newTokenLiteral, lexer.curLineNum)
 
 	lexer.readNextByte()
@@ -192,4 +222,12 @@ func (lexer *Lexer) readNextByte() {
 
 	lexer.curPos = lexer.posToRead
 	lexer.posToRead++
+}
+
+func (lexer *Lexer) peekNextByte() byte {
+	if lexer.posToRead >= len(lexer.input) {
+		return 0
+	} else {
+		return lexer.input[lexer.posToRead]
+	}
 }

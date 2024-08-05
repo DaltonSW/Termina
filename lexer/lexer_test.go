@@ -31,7 +31,6 @@ func TestTokenParsingOperators(t *testing.T) {
 			t.Fatalf("tests[%d] failed - Token mismatch.\nExpected %q (%q)\nGot %q (%q)", i, expected.expectedLiteral, expected.expectedType, nextToken.Literal, nextToken.Type)
 		}
 
-		log.Info("Token", "Str", nextToken.Literal, "Type", nextToken.Type)
 	}
 }
 
@@ -65,7 +64,6 @@ func TestTokenParsingGroupers(t *testing.T) {
 			t.Fatalf("tests[%d] failed - Token mismatch.\nExpected %q (%q)\nGot %q (%q)", i, expected.expectedLiteral, expected.expectedType, nextToken.Literal, nextToken.Type)
 		}
 
-		log.Info("Token", "Str", nextToken.Literal, "Type", nextToken.Type)
 	}
 }
 
@@ -96,8 +94,6 @@ func TestTokenParsingNewLines(t *testing.T) {
 		if nextToken.Type != expected.expectedType || nextToken.Literal != expected.expectedLiteral {
 			t.Fatalf("tests[%d] failed - Token mismatch.\nExpected %q (%q)\nGot %q (%q)", i, expected.expectedLiteral, expected.expectedType, nextToken.Literal, nextToken.Type)
 		}
-
-		log.Info("Token", "Str", nextToken.Literal, "Type", nextToken.Type)
 	}
 }
 func TestTokenParsingNumberLiteral(t *testing.T) {
@@ -123,8 +119,6 @@ func TestTokenParsingNumberLiteral(t *testing.T) {
 		if nextToken.Type != expected.expectedType || nextToken.Literal != expected.expectedLiteral {
 			t.Fatalf("tests[%d] failed - Token mismatch.\nExpected %q (%q)\nGot %q (%q)", i, expected.expectedLiteral, expected.expectedType, nextToken.Literal, nextToken.Type)
 		}
-
-		log.Info("Token", "Str", nextToken.Literal, "Type", nextToken.Type)
 	}
 }
 
@@ -205,8 +199,49 @@ func TestTokenParsingSimpleProgram(t *testing.T) {
 		if nextToken.Type != expected.expectedType || nextToken.Literal != expected.expectedLiteral {
 			t.Fatalf("tests[%d] failed - Token mismatch.\nExpected %q (%q)\nGot %q (%q)", i, expected.expectedLiteral, expected.expectedType, nextToken.Literal, nextToken.Type)
 		}
+	}
+
+}
+
+func TestTwoCharacterTokenParsing(t *testing.T) {
+	input := `5 != 10
+	5 == 5
+	10 >= 10
+	10 <= 20`
+	// log.SetLevel(log.DebugLevel)
+	lex := MakeNewLexer(input)
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.INTEGER, "5"},
+		{token.NOTEQUAL, "!="},
+		{token.INTEGER, "10"},
+		{token.NEWLINE, "\n"},
+
+		{token.INTEGER, "5"},
+		{token.ISEQUAL, "=="},
+		{token.INTEGER, "5"},
+		{token.NEWLINE, "\n"},
+
+		{token.INTEGER, "10"},
+		{token.GRTREQUAL, ">="},
+		{token.INTEGER, "10"},
+		{token.NEWLINE, "\n"},
+
+		{token.INTEGER, "10"},
+		{token.LESSEQUAL, "<="},
+		{token.INTEGER, "20"},
+	}
+
+	for i, expected := range tests {
+		nextToken := lex.GetNextToken()
+
+		if nextToken.Type != expected.expectedType || nextToken.Literal != expected.expectedLiteral {
+			t.Fatalf("tests[%d] failed - Token mismatch.\nExpected %q (%q)\nGot %q (%q)", i, expected.expectedLiteral, expected.expectedType, nextToken.Literal, nextToken.Type)
+		}
 
 		log.Info("Token", "Str", nextToken.Literal, "Type", nextToken.Type)
 	}
-
 }
