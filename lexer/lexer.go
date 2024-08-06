@@ -81,6 +81,7 @@ func (lexer *Lexer) GetNextToken() token.Token {
 			lexer.readNextByte()
 			newTokenLiteral = ">="
 		}
+
 	// Grouping
 	case '(':
 		newTokenType = token.LPAREN
@@ -94,8 +95,13 @@ func (lexer *Lexer) GetNextToken() token.Token {
 		newTokenType = token.LBRACE
 	case '}':
 		newTokenType = token.RBRACE
-	// Delimiters
+	case '"':
+		// newTokenType = token.QUOTE
+		return lexer.tryReadString()
+	case '\'':
+		newTokenType = token.APOSTR
 
+	// Delimiters
 	case ';':
 		newTokenType = token.SEMICOL
 	case ':':
@@ -107,8 +113,8 @@ func (lexer *Lexer) GetNextToken() token.Token {
 	case '\n':
 		newTokenType = token.NEWLINE
 		lexer.curLineNum += 1
-	// Misc
 
+	// Misc
 	case '=':
 		nextByte := lexer.peekNextByte()
 		if nextByte != '=' {
@@ -143,6 +149,22 @@ func (lexer *Lexer) GetNextToken() token.Token {
 	newToken = *token.MakeNewToken(newTokenType, newTokenLiteral, lexer.curLineNum)
 
 	lexer.readNextByte()
+	return newToken
+}
+
+func (lexer *Lexer) tryReadString() token.Token {
+	startPos := lexer.curPos
+
+	lexer.readNextByte()       // Skip the opening quote
+	for lexer.curChar != '"' { // Grab contents of string literal
+		lexer.readNextByte()
+	}
+	lexer.readNextByte() // Pick up the closing quote
+
+	identString := lexer.input[startPos:lexer.curPos]
+
+	newToken := *token.MakeNewToken(token.STRING, identString, lexer.curLineNum)
+
 	return newToken
 }
 
@@ -208,7 +230,7 @@ func isDigit(ch byte) bool {
 
 func (lexer *Lexer) skipWhitespace() {
 	for lexer.curChar == ' ' || lexer.curChar == '\t' || lexer.curChar == '\r' {
-		log.Info("Skipping char", "char", string(lexer.curChar))
+		// log.Info("Skipping char", "char", string(lexer.curChar))
 		lexer.readNextByte()
 	}
 }

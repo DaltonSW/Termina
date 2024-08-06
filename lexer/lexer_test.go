@@ -132,6 +132,8 @@ func TestTokenParsingSimpleProgram(t *testing.T) {
 
 	var sum = add(x, y)
 
+	var name = "Dalton"
+
 	exit(0)
 	`
 	// log.SetLevel(log.DebugLevel)
@@ -184,6 +186,13 @@ func TestTokenParsingSimpleProgram(t *testing.T) {
 		{token.COMMA, ","},
 		{token.IDENT, "y"},
 		{token.RPAREN, ")"},
+		{token.NEWLINE, "\n"},
+		{token.NEWLINE, "\n"},
+
+		{token.VAR, "var"},
+		{token.IDENT, "name"},
+		{token.EQUALS, "="},
+		{token.STRING, "\"Dalton\""},
 		{token.NEWLINE, "\n"},
 		{token.NEWLINE, "\n"},
 

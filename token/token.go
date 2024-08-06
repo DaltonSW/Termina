@@ -29,6 +29,8 @@ const (
 	RBRACK
 	LBRACE
 	RBRACE
+	QUOTE
+	APOSTR
 
 	// Delimiters
 	SEMICOL
