@@ -44,6 +44,7 @@ const (
 	VAR
 	RETURN
 	FUNC
+	// TODO: Should "exit" be a function or a keyword? (exit(0) vs exit 0)
 
 	// Identifers & Types
 	IDENT
