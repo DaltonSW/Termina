@@ -1,29 +1,62 @@
 # Reference
 
-I doubt this document is going to adhere to any standard, but I'm just documenting things about the language that I think need to be formalized in some way.
-
 ## Language Reservations
 
 ### Keywords
 
-- return
+- `return`
   - Indicates that the remainder of the lineis to be considered the evaluation of the containing function
-- var
+- `var`
   - Indicates an assignment
-- func
+- `func`
   - Starts a function declaration
-- class
+- `class`
   - Starts a class declaration
-- interface
+- `interface`
   - Starts an interface declaration
+- `defer`
+  - Indicates that a function call will happen before the containing function returns
+- `import`
+  - Starts a block of module import calls
+- `const`
+  - Declare a constant
+- `static`
+  - Declares a mutable value that is shared across all implementations of a class
+- `abstract`
+  - Indicates that a class is abstract. Can't have implementation
+- `parent`
+  - References the parent class
+- `if`, `else`, `elif`
+  - Traditional conditional branches
+- `switch`, `case`
+  - Switch statement conditional branching
 
 ### Data Types
+
+#### Literals
 
 - integers --- (int)
 - floats ----- (float)
 - strings ---- (str)
 - characters - (char)
 - booleans --- (bool)
+- null (is this a type?)
+
+#### Collections
+
+- list
+- dict
+
+### Symbols
+
+- `( ) [ ] { } ' "`
+  - Groupings 
+- `+ - * / %`
+  - Math
+- `= < > ? & |`
+  - Comparison
+- `\ ! : ; , .`
+  - Misc
 
 ## Conditional Evaluation
 
